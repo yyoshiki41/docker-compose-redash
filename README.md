@@ -17,3 +17,14 @@ $ docker-compose pull
 ```shell
 $ docker-compose run --rm server create_db
 ```
+
+4. Up
+
+```shell
+$ docker-compose up -d
+```
+
+## Resources
+
+- [Environment variables](https://redash.io/help/open-source/admin-guide/env-vars-settings)
+- [Upgrade from v8 to v10](https://github.com/getredash/redash/blob/v10.0.0/CHANGELOG.md#upgrading)
