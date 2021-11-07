@@ -1,8 +1,8 @@
-version: "3.7"
+version: '3.7'
 
 services:
   server:
-    image: redash/redash:8.0.2.b37747
+    image: redash/redash:10.0.0.b50363
     depends_on:
       - postgres
       - redis
@@ -15,8 +15,9 @@ services:
       REDASH_REDIS_URL: "redis://redis:6379/0"
       REDASH_DATABASE_URL: "postgresql://postgres:password@postgres/postgres"
       REDASH_RATELIMIT_ENABLED: "false"
+      REDASH_ENFORCE_CSRF: "true"
   worker:
-    image: redash/redash:8.0.2.b37747
+    image: redash/redash:10.0.0.b50363
     command: worker
     depends_on:
       - server
@@ -25,13 +26,21 @@ services:
       REDASH_LOG_LEVEL: "INFO"
       REDASH_REDIS_URL: "redis://redis:6379/0"
       REDASH_DATABASE_URL: "postgresql://postgres:password@postgres/postgres"
-      QUEUES: "queries,scheduled_queries,celery,schemas"
-      WORKERS_COUNT: 2
+  scheduler:
+    image: redash/redash:10.0.0.b50363
+    command: scheduler
+    depends_on:
+      - server
+    environment:
+      PYTHONUNBUFFERED: 0
+      REDASH_LOG_LEVEL: "INFO"
+      REDASH_REDIS_URL: "redis://redis:6379/0"
+      REDASH_DATABASE_URL: "postgresql://postgres:password@postgres/postgres"
   redis:
-    image: redis:3-alpine
+    image: redis:6-alpine
     restart: unless-stopped
   postgres:
-    image: postgres:9.5-alpine
+    image: postgres:9.6-alpine
     ports:
       - "5432:5432"
     command: "postgres -c fsync=off -c full_page_writes=off -c synchronous_commit=OFF"
